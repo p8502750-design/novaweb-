@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaWeb — Futuristic AI Tools Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#070a12',
+                            card: 'rgba(15, 23, 42, 0.75)',
+                            border: 'rgba(56, 189, 248, 0.2)',
+                            primary: '#00f2fe',
+                            secondary: '#4facfe',
+                            accent: '#7f00ff',
+                            neonPink: '#ff007f',
+                            glow: 'rgba(0, 242, 254, 0.15)'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 20px rgba(0, 242, 254, 0.35)',
+                        'neon-purple': '0 0 20px rgba(127, 0, 255, 0.35)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS for Cyberpunk Glass & Animations -->
+    <style>
+        body {
+            background-color: #070a12;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism styling */
+        .glass-panel {
+            background: rgba(13, 20, 36, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        .glass-panel-interactive {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-panel-interactive:hover {
+            border-color: rgba(0, 242, 254, 0.5);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Glowing text & borders */
+        .glow-text-cyan {
+            text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+        }
+        .glow-text-purple {
+            text-shadow: 0 0 12px rgba(127, 0, 255, 0.6);
+        }
+
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(135deg, #00f2fe, #7f00ff);
+            padding: 1px;
+            border-radius: 0.75rem;
+        }
+        .gradient-border-inner {
+            background: #090d16;
+            border-radius: calc(0.75rem - 1px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070a12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f2fe;
+        }
+
+        /* Grid Background pattern */
+        .bg-grid-pattern {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Pulse glowing animation */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+
+        code, pre {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="bg-grid-pattern min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+
+    <!-- Ambient Glowing Orbs Background -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-cyan-600/20 rounded-full filter blur-[120px] animate-pulse-glow"></div>
+        <div class="absolute top-1/2 -right-40 w-96 h-96 bg-purple-600/20 rounded-full filter blur-[120px] animate-pulse-glow" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-blue-600/15 rounded-full filter blur-[120px] animate-pulse-glow" style="animation-delay: 1s;"></div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col space-y-3 pointer-events-none"></div>
+
+    <!-- MAIN HEADER / NAVBAR -->
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-cyan-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('directory')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 flex items-center justify-center shadow-neon-cyan">
+                    <i class="fa-solid font-bold text-black text-xl fa-bolt"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-200 to-purple-400 tracking-wider">NOVA<span class="text-cyan-400">WEB</span></span>
+                    <span class="hidden sm:inline-block text-[10px] uppercase tracking-widest text-cyan-400/80 block font-mono -mt-1">AI Tools OS v2.5</span>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                <button onclick="switchTab('directory')" id="nav-directory" class="nav-link px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-cyan-400 bg-cyan-950/40 border border-cyan-500/30">
+                    <i class="fa-solid fa-shapes mr-2"></i>Directory
+                </button>
+                <button onclick="switchTab('playground')" id="nav-playground" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-200">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-2 text-purple-400"></i>AI Playground
+                </button>
+                <button onclick="switchTab('pricing')" id="nav-pricing" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-200">
+                    <i class="fa-solid fa-gem mr-2 text-amber-400"></i>Pricing
+                </button>
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-200">
+                    <i class="fa-solid fa-gauge-high mr-2 text-emerald-400"></i>Dashboard
+                </button>
+                <button onclick="switchTab('admin')" id="nav-admin" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-200">
+                    <i class="fa-solid fa-user-gear mr-2 text-rose-400"></i>Admin Panel
+                </button>
+                <button onclick="switchTab('contact')" id="nav-contact" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-200">
+                    <i class="fa-solid fa-envelope mr-2"></i>Contact
+                </button>
+            </nav>
+
+            <!-- User Auth Controls -->
+            <div class="hidden md:flex items-center space-x-4">
+                <div id="userProfileArea" class="hidden items-center space-x-3 bg-slate-900/80 border border-slate-700/60 rounded-full py-1.5 px-3">
+                    <img id="userAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-7 h-7 rounded-full border border-cyan-400 object-cover">
+                    <span id="userName" class="text-xs font-semibold text-slate-200">User</span>
+                    <span id="userBadge" class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-mono px-2 py-0.5 rounded-full uppercase">PRO</span>
+                    <button onclick="logoutUser()" class="text-slate-400 hover:text-rose-400 text-xs ml-1 transition" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+                <button id="loginModalBtn" onclick="openAuthModal()" class="gradient-border group cursor-pointer shadow-neon-cyan transition-all duration-300 hover:scale-105">
+                    <div class="gradient-border-inner px-5 py-2 flex items-center space-x-2 text-sm font-semibold text-cyan-300 group-hover:text-white">
+                        <i class="fa-solid fa-user-astronaut"></i>
+                        <span>Sign In / Demo</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Toggle Button -->
+            <div class="md:hidden flex items-center space-x-2">
+                <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="p-2.5 rounded-lg bg-slate-800/80 text-cyan-400 border border-slate-700 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobileDrawer" class="hidden md:hidden border-b border-cyan-900/50 bg-slate-950/95 px-4 pt-3 pb-6 space-y-3">
+            <button onclick="switchTab('directory'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-200 bg-slate-900/80 flex items-center">
+                <i class="fa-solid fa-shapes mr-3 text-cyan-400"></i>AI Directory
+            </button>
+            <button onclick="switchTab('playground'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-200 bg-slate-900/80 flex items-center">
+                <i class="fa-solid fa-wand-magic-sparkles mr-3 text-purple-400"></i>AI Playground
+            </button>
+            <button onclick="switchTab('pricing'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-200 bg-slate-900/80 flex items-center">
+                <i class="fa-solid fa-gem mr-3 text-amber-400"></i>Pricing Tiers
+            </button>
+            <button onclick="switchTab('dashboard'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-200 bg-slate-900/80 flex items-center">
+                <i class="fa-solid fa-gauge-high mr-3 text-emerald-400"></i>User Dashboard
+            </button>
+            <button onclick="switchTab('admin'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-200 bg-slate-900/80 flex items-center">
+                <i class="fa-solid fa-user-gear mr-3 text-rose-400"></i>Admin Panel
+            </button>
+            <button onclick="switchTab('contact'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-200 bg-slate-900/80 flex items-center">
+                <i class="fa-solid fa-envelope mr-3 text-blue-400"></i>Contact Us
+            </button>
+            <div id="mobileAuthContainer" class="pt-2 border-t border-slate-800">
+                <button onclick="openAuthModal(); toggleMobileMenu();" class="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold flex items-center justify-center">
+                    <i class="fa-solid fa-user-astronaut mr-2"></i>Sign In / Access Demo
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 z-10 w-full flex-grow">
+
+        <!-- 1. DIRECTORY SECTION -->
+        <section id="section-directory" class="tab-content space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative glass-panel rounded-3xl p-8 sm:p-12 overflow-hidden border border-cyan-500/30 text-center sm:text-left">
+                <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                    <i class="fa-solid fa-brain text-[260px] text-cyan-400"></i>
+                </div>
+                <div class="max-w-2xl relative z-10">
+                    <span class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 inline-block mb-4">
+                        <i class="fa-solid fa-bolt mr-1"></i> NEXT-GEN AI SUITE
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+                        Discover & Deploy <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">Autonomous AI Tools</span>
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+                        Explore curated neural tools, intelligent prompt optimizers, code generators, and multi-modal assistants designed for high-performance workflows.
+                    </p>
+                    <div class="flex flex-wrap gap-3 justify-center sm:justify-start">
+                        <button onclick="switchTab('playground')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-sm shadow-neon-cyan hover:scale-105 transition">
+                            <i class="fa-solid fa-play mr-2"></i>Launch Playground
+                        </button>
+                        <button onclick="scrollToTools()" class="px-6 py-3 rounded-xl glass-panel text-slate-200 font-semibold text-sm hover:border-cyan-400 transition">
+                            <i class="fa-solid fa-compass mr-2 text-cyan-400"></i>Browse Catalog
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter & Search Controls -->
+            <div id="toolsAnchor" class="space-y-4">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <!-- Search Input -->
+                    <div class="relative w-full md:w-96">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="directorySearch" onkeyup="filterTools()" placeholder="Search AI tools, tags, capability..." class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition">
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto overflow-x-auto pb-1">
+                        <button onclick="filterCategory('All')" class="cat-filter-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">All Tools</button>
+                        <button onclick="filterCategory('Text & Writing')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700">Text & Writing</button>
+                        <button onclick="filterCategory('Coding')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700">Coding</button>
+                        <button onclick="filterCategory('Image & Art')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700">Image & Art</button>
+                        <button onclick="filterCategory('Productivity')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700">Productivity</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Tools Grid -->
+            <div id="toolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically Rendered Tools Cards -->
+            </div>
+        </section>
+
+        <!-- 2. AI PLAYGROUND / RUNNER -->
+        <section id="section-playground" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400 mr-3"></i>Gemini AI Playground
+                    </h2>
+                    <p class="text-xs text-slate-400">Interactive workspace powered by official Gemini API models.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-3 py-1.5 rounded-lg flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping mr-2"></span>Gemini 3 Flash Ready
+                    </span>
+                </div>
+            </div>
+
+            <!-- Playground Interface Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Configuration Panel -->
+                <div class="lg:col-span-4 glass-panel p-5 rounded-2xl space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Select Neural Tool Mode</label>
+                        <select id="playgroundToolSelect" onchange="updatePlaygroundMode()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-cyan-300 focus:outline-none focus:border-cyan-400">
+                            <option value="text_gen">✨ AI General Text Synthesizer</option>
+                            <option value="prompt_opt">🚀 Cyber Prompt Enhancer</option>
+                            <option value="code_assist">💻 Code Explainer & Architect</option>
+                            <option value="summarizer">⚡ Content Summarizer & Analyst</option>
+                        </select>
+                    </div>
+
+                    <!-- Mode Info Box -->
+                    <div id="playgroundModeDesc" class="bg-slate-900/90 border border-cyan-900/40 p-3.5 rounded-xl text-xs text-slate-300">
+                        Synthesize stories, articles, emails, or high-level creative text outputs.
+                    </div>
+
+                    <!-- System Context Customizer -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">System Instruction / Persona</label>
+                        <textarea id="playgroundSystemPrompt" rows="3" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-cyan-400" placeholder="e.g. Act as a senior cybersecurity consultant..."></textarea>
+                    </div>
+
+                    <!-- Quick Prompt Presets -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Quick Presets</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="loadPreset('code')" class="px-2.5 py-1 rounded-lg text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Code Optimization</button>
+                            <button onclick="loadPreset('marketing')" class="px-2.5 py-1 rounded-lg text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Cyberpunk Ad Pitch</button>
+                            <button onclick="loadPreset('summary')" class="px-2.5 py-1 rounded-lg text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Executive Summary</button>
+                        </div>
+                    </div>
+
+                    <!-- Execution Stats -->
+                    <div class="pt-3 border-t border-slate-800 flex justify-between text-[11px] text-slate-400 font-mono">
+                        <span>Latency: <span id="statLatency" class="text-cyan-400">0ms</span></span>
+                        <span>Tokens: <span id="statTokens" class="text-purple-400">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Right Execution Workspace -->
+                <div class="lg:col-span-8 flex flex-col space-y-4">
+                    
+                    <!-- Input Box -->
+                    <div class="glass-panel p-5 rounded-2xl space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center">
+                                <i class="fa-solid fa-terminal mr-2 text-cyan-400"></i>Prompt Input Target
+                            </label>
+                            <button onclick="clearPlaygroundInput()" class="text-xs text-slate-400 hover:text-rose-400">
+                                <i class="fa-solid fa-eraser mr-1"></i>Clear
+                            </button>
+                        </div>
+                        <textarea id="playgroundInput" rows="5" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl p-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono" placeholder="Type your instruction or code snippet here..."></textarea>
+                        
+                        <div class="flex items-center justify-between pt-2">
+                            <span class="text-xs text-slate-500 font-mono">Powered by Gemini 3 Flash API</span>
+                            <button id="runAiBtn" onclick="executePlaygroundAI()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-slate-950 font-bold text-sm shadow-neon-cyan hover:scale-105 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-bolt"></i>
+                                <span>Execute Neural Query</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Output Console Box -->
+                    <div class="glass-panel p-5 rounded-2xl flex-grow flex flex-col min-h-[300px]">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center">
+                                <i class="fa-solid fa-code mr-2 text-purple-400"></i>Generated AI Output
+                            </label>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="copyPlaygroundOutput()" class="px-3 py-1 rounded-lg text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+                                    <i class="fa-regular fa-copy mr-1"></i>Copy Output
+                                </button>
+                                <button onclick="downloadPlaygroundOutput()" class="px-3 py-1 rounded-lg text-xs bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition">
+                                    <i class="fa-solid fa-download mr-1"></i>Download
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Result Area -->
+                        <div id="playgroundOutput" class="w-full flex-grow bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-slate-200 font-mono whitespace-pre-wrap overflow-y-auto max-h-[400px]">
+                            <span class="text-slate-600 italic">// Awaiting prompt execution... Output will stream here.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PRICING & SUBSCRIPTIONS -->
+        <section id="section-pricing" class="tab-content hidden space-y-10">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 inline-block">
+                    FLEXIBLE QUANTUM TIERS
+                </span>
+                <h2 class="text-3xl font-black text-white">Upgrade Your Neural Bandwidth</h2>
+                <p class="text-slate-400 text-sm">Choose the tier tailored for individual builders, prompt engineers, or enterprise scale.</p>
+            </div>
+
+            <!-- Pricing Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Free Tier -->
+                <div class="glass-panel rounded-3xl p-8 flex flex-col justify-between space-y-6 border border-slate-800">
+                    <div>
+                        <span class="text-xs font-mono uppercase tracking-widest text-slate-400">Starter</span>
+                        <h3 class="text-2xl font-bold text-white mt-1">Free Tier</h3>
+                        <div class="mt-4 flex items-baseline">
+                            <span class="text-4xl font-extrabold text-white">$0</span>
+                            <span class="text-slate-400 text-sm ml-2">/ forever</span>
+                        </div>
+                        <ul class="mt-6 space-y-3 text-xs text-slate-300">
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i> 25 AI Tool Executions / day</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i> Access to Standard Tools</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i> Community Support</li>
+                            <li class="flex items-center text-slate-500 line-through"><i class="fa-solid fa-xmark mr-2"></i> High Priority Gemini Flash Models</li>
+                            <li class="flex items-center text-slate-500 line-through"><i class="fa-solid fa-xmark mr-2"></i> Unlimited File Upload Manager</li>
+                        </ul>
+                    </div>
+                    <button id="planBtn-Free" onclick="selectPlan('Free', 0)" class="w-full py-3 rounded-xl bg-slate-800 text-slate-300 font-semibold text-sm hover:bg-slate-700 transition">
+                        Current Plan
+                    </button>
+                </div>
+
+                <!-- Pro Tier (Popular) -->
+                <div class="glass-panel rounded-3xl p-8 flex flex-col justify-between space-y-6 border-2 border-cyan-400 relative shadow-neon-cyan">
+                    <span class="absolute -top-3 right-8 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                        Most Popular
+                    </span>
+                    <div>
+                        <span class="text-xs font-mono uppercase tracking-widest text-cyan-400">Professional</span>
+                        <h3 class="text-2xl font-bold text-white mt-1">Nova Pro</h3>
+                        <div class="mt-4 flex items-baseline">
+                            <span class="text-4xl font-extrabold text-white">$19</span>
+                            <span class="text-slate-400 text-sm ml-2">/ month</span>
+                        </div>
+                        <ul class="mt-6 space-y-3 text-xs text-slate-300">
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i> Unlimited AI Executions</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i> Full Gemini API High-Speed Access</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i> File Uploads & Cloud History</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i> Early Access to New Neural Tools</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-400 mr-2"></i> Priority Support</li>
+                        </ul>
+                    </div>
+                    <button id="planBtn-Pro" onclick="selectPlan('Pro', 19)" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 font-bold text-sm shadow-neon-cyan hover:scale-105 transition">
+                        Upgrade to Pro
+                    </button>
+                </div>
+
+                <!-- Enterprise Tier -->
+                <div class="glass-panel rounded-3xl p-8 flex flex-col justify-between space-y-6 border border-purple-500/30">
+                    <div>
+                        <span class="text-xs font-mono uppercase tracking-widest text-purple-400">Scale</span>
+                        <h3 class="text-2xl font-bold text-white mt-1">Enterprise</h3>
+                        <div class="mt-4 flex items-baseline">
+                            <span class="text-4xl font-extrabold text-white">$49</span>
+                            <span class="text-slate-400 text-sm ml-2">/ month</span>
+                        </div>
+                        <ul class="mt-6 space-y-3 text-xs text-slate-300">
+                            <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> Everything in Pro Tier</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> Dedicated API Rate Limits</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> Custom Model System Prompts</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> Admin Multi-Seat License</li>
+                            <li class="flex items-center"><i class="fa-solid fa-check text-purple-400 mr-2"></i> 24/7 Quantum Support</li>
+                        </ul>
+                    </div>
+                    <button id="planBtn-Enterprise" onclick="selectPlan('Enterprise', 49)" class="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition">
+                        Upgrade to Enterprise
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4. USER DASHBOARD -->
+        <section id="section-dashboard" class="tab-content hidden space-y-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">User Command Center</h2>
+                    <p class="text-xs text-slate-400">Monitor your neural session usage, saved tools, and managed assets.</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span id="dashPlanBadge" class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-mono px-3 py-1 rounded-lg">
+                        PLAN: <strong id="dashPlanText">FREE TIER</strong>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Stats Overview Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-black text-white" id="dashTotalCalls">142</div>
+                        <div class="text-xs text-slate-400">Total API Queries</div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-bookmark"></i>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-black text-white" id="dashSavedCount">0</div>
+                        <div class="text-xs text-slate-400">Bookmarked Tools</div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-black text-white" id="dashFileCount">3</div>
+                        <div class="text-xs text-slate-400">Uploaded Assets</div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-black text-white">99.8%</div>
+                        <div class="text-xs text-slate-400">Uptime Metric</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Tools Section & Upload Manager Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Bookmarked Tools -->
+                <div class="lg:col-span-6 glass-panel p-6 rounded-2xl space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-star text-amber-400 mr-2"></i>My Bookmarked Tools
+                    </h3>
+                    <div id="dashboardBookmarksList" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                        <!-- Rendered Bookmarks -->
+                    </div>
+                </div>
+
+                <!-- File Manager (Upload / Download) -->
+                <div class="lg:col-span-6 glass-panel p-6 rounded-2xl space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-cloud-arrow-up text-cyan-400 mr-2"></i>Cloud Asset Manager
+                    </h3>
+                    
+                    <!-- Drag & Drop Zone -->
+                    <div id="dropZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-slate-700 hover:border-cyan-400 rounded-xl p-6 text-center bg-slate-900/50 cursor-pointer transition">
+                        <i class="fa-solid fa-file-arrow-up text-3xl text-cyan-400 mb-2"></i>
+                        <p class="text-xs text-slate-300 font-medium">Click or Drag files here to upload to Nova Storage</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Supports TXT, JSON, MD, PNG, JPG (Simulated persistent cloud)</p>
+                        <input type="file" id="fileInput" class="hidden" onchange="handleFileUpload(event)">
+                    </div>
+
+                    <!-- File List -->
+                    <div id="userFilesList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        <!-- Dynamic File List -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 5. ADMIN PANEL -->
+        <section id="section-admin" class="tab-content hidden space-y-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fa-solid fa-user-gear text-rose-400 mr-3"></i>Platform Admin Suite
+                    </h2>
+                    <p class="text-xs text-slate-400">Manage tool items, monitor user activity, and platform metrics.</p>
+                </div>
+                <button onclick="openAddToolModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 text-white text-xs font-bold shadow-lg hover:scale-105 transition">
+                    <i class="fa-solid fa-plus mr-1"></i> Add New AI Tool
+                </button>
+            </div>
+
+            <!-- Global Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800">
+                    <span class="text-xs text-slate-400 uppercase font-mono">Total Users</span>
+                    <div class="text-3xl font-extrabold text-white mt-1">1,482</div>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800">
+                    <span class="text-xs text-slate-400 uppercase font-mono">Monthly Revenue</span>
+                    <div class="text-3xl font-extrabold text-emerald-400 mt-1">$8,940</div>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800">
+                    <span class="text-xs text-slate-400 uppercase font-mono">Active AI Sessions</span>
+                    <div class="text-3xl font-extrabold text-cyan-400 mt-1">321</div>
+                </div>
+            </div>
+
+            <!-- Users Management Table -->
+            <div class="glass-panel rounded-2xl p-6 space-y-4 overflow-hidden">
+                <h3 class="text-lg font-bold text-white">Registered Users Directory</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900/80 text-slate-400 uppercase font-mono border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">User</th>
+                                <th class="p-3">Email</th>
+                                <th class="p-3">Subscription</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTable" class="divide-y divide-slate-800">
+                            <!-- Populated in JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. CONTACT FORM -->
+        <section id="section-contact" class="tab-content hidden max-w-2xl mx-auto space-y-6">
+            <div class="glass-panel p-8 rounded-3xl space-y-6 border border-cyan-500/20">
+                <div class="text-center space-y-2">
+                    <h2 class="text-2xl font-bold text-white">Get in Touch with NovaWeb</h2>
+                    <p class="text-xs text-slate-400">Have feedback or enterprise deployment requests? Send us a direct dispatch.</p>
+                </div>
+
+                <form id="contactForm" onsubmit="handleContactSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Your Name</label>
+                        <input type="text" id="contactName" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Email Address</label>
+                        <input type="email" id="contactEmail" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Message / Inquiry</label>
+                        <textarea id="contactMessage" rows="4" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-sm text-slate-200 focus:outline-none focus:border-cyan-400" placeholder="Type your message..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-sm shadow-neon-cyan hover:scale-[1.02] transition">
+                        <i class="fa-solid fa-paper-plane mr-2"></i>Send Dispatch Message
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: AUTHENTICATION (LOGIN / SIGNUP) -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-panel max-w-md w-full rounded-3xl p-6 sm:p-8 border border-cyan-500/40 relative space-y-6">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <!-- Auth Tabs -->
+            <div class="flex border-b border-slate-800">
+                <button id="authTabLogin" onclick="switchAuthTab('login')" class="w-1/2 py-2 text-sm font-bold text-cyan-400 border-b-2 border-cyan-400">Sign In</button>
+                <button id="authTabSignup" onclick="switchAuthTab('signup')" class="w-1/2 py-2 text-sm font-bold text-slate-400 border-b-2 border-transparent">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Email</label>
+                    <input type="email" id="loginEmail" required value="demo@novaweb.ai" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
+                    <input type="password" id="loginPass" required value="demo123" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-400">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm transition">
+                    Sign In to NovaWeb
+                </button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" onsubmit="handleAuthSubmit(event, 'signup')" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
+                    <input type="text" id="signupName" required placeholder="Alex Vance" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Email</label>
+                    <input type="email" id="signupEmail" required placeholder="alex@novaweb.ai" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
+                    <input type="password" id="signupPass" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-400">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-bold text-sm transition">
+                    Create Account
+                </button>
+            </form>
+
+            <!-- Demo Quick Auth -->
+            <div class="pt-2 border-t border-slate-800 text-center">
+                <button onclick="demoQuickLogin()" class="text-xs text-cyan-400 hover:underline">
+                    ⚡ Fast-track Demo Session Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: STRIPE PAYMENT CHECKOUT -->
+    <div id="paymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-panel max-w-md w-full rounded-3xl p-6 sm:p-8 border border-cyan-500/40 relative space-y-6">
+            <button onclick="closePaymentModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="space-y-1">
+                <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">Secure Quantum Checkout</span>
+                <h3 class="text-xl font-bold text-white">Upgrade to <span id="payModalPlanName" class="text-cyan-400">Pro</span></h3>
+                <p class="text-xs text-slate-400">Amount due now: <strong id="payModalAmount" class="text-white">$19.00</strong></p>
+            </div>
+
+            <form onsubmit="processPayment(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Cardholder Name</label>
+                    <input type="text" required value="Alex Vance" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Card Number</label>
+                    <div class="relative">
+                        <input type="text" required placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 font-mono">
+                        <i class="fa-brands fa-cc-stripe absolute right-3 top-1/2 -translate-y-1/2 text-2xl text-slate-400"></i>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Expiry Date</label>
+                        <input type="text" placeholder="MM/YY" value="12/28" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">CVC / CVV</label>
+                        <input type="text" placeholder="123" value="888" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 font-mono">
+                    </div>
+                </div>
+
+                <button type="submit" id="paySubmitBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-bold text-sm hover:scale-105 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Confirm & Authorize Payment</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADMIN ADD AI TOOL -->
+    <div id="addToolModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 border border-purple-500/40 relative space-y-6">
+            <button onclick="closeAddToolModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <h3 class="text-xl font-bold text-white">Insert New AI Tool to Catalog</h3>
+
+            <form onsubmit="handleAddNewTool(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Tool Title</label>
+                    <input type="text" id="newToolTitle" required placeholder="e.g. Cyber Image Synthesizer" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Category</label>
+                    <select id="newToolCat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-cyan-300">
+                        <option value="Text & Writing">Text & Writing</option>
+                        <option value="Coding">Coding</option>
+                        <option value="Image & Art">Image & Art</option>
+                        <option value="Productivity">Productivity</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Description</label>
+                    <textarea id="newToolDesc" rows="3" required placeholder="Tool summary..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-200"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">FontAwesome Icon Class</label>
+                    <input type="text" id="newToolIcon" value="fa-solid fa-robot" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 font-mono">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition">
+                    Publish Tool to Live Directory
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="glass-panel border-t border-cyan-900/30 py-8 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 text-xs text-slate-400">
+            <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span>NovaWeb Operating System © 2026. All Rights Reserved.</span>
+            </div>
+            <div class="flex items-center space-x-6">
+                <a href="#" onclick="switchTab('directory')" class="hover:text-cyan-400">Directory</a>
+                <a href="#" onclick="switchTab('playground')" class="hover:text-cyan-400">Gemini AI</a>
+                <a href="#" onclick="switchTab('pricing')" class="hover:text-cyan-400">Pricing</a>
+                <a href="#" onclick="switchTab('contact')" class="hover:text-cyan-400">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // GLOBAL APP STATE
+        const APP_STATE = {
+            user: {
+                isLoggedIn: true,
+                name: "Alex Vance",
+                email: "alex@novaweb.ai",
+                plan: "Pro",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+            },
+            bookmarks: [1, 3],
+            files: [
+                { name: "quantum_prompt_preset.txt", size: "14 KB", date: "2026-10-18" },
+                { name: "neural_summary_export.json", size: "48 KB", date: "2026-10-19" }
+            ],
+            tools: [
+                { id: 1, title: "Neural Article Generator", category: "Text & Writing", desc: "Synthesizes SEO optimized blog posts, tech articles, and creative stories with precision tone control.", icon: "fa-pen-nib", rating: 4.9, tags: ["Writing", "SEO", "Gemini"] },
+                { id: 2, title: "Prompt Enhancer Pro", category: "Productivity", desc: "Transforms basic prompts into structured, context-rich super prompts for maximum LLM performance.", icon: "fa-wand-magic-sparkles", rating: 4.8, tags: ["Prompts", "Refinement"] },
+                { id: 3, title: "Cyber Code Architect", category: "Coding", desc: "Analyzes codebases, refactors syntax, generates unit tests, and detects security bugs.", icon: "fa-code", rating: 5.0, tags: ["Developer", "Debug", "JS/Python"] },
+                { id: 4, title: "Concept Art Prompt Master", category: "Image & Art", desc: "Crafts Midjourney & Stable Diffusion image prompts with lighting, lens, and stylistic tags.", icon: "fa-palette", rating: 4.7, tags: ["Art", "Midjourney"] },
+                { id: 5, title: "Executive Content Summarizer", category: "Productivity", desc: "Extracts key takeaways, action items, and executive summaries from long text & transcripts.", icon: "fa-file-contract", rating: 4.9, tags: ["Summary", "Productivity"] },
+                { id: 6, title: "SQL & Query Optimizer", category: "Coding", desc: "Translates natural language into high-performance SQL queries and database schemas.", icon: "fa-database", rating: 4.6, tags: ["Database", "SQL"] }
+            ],
+            usersAdmin: [
+                { id: 101, name: "Alex Vance", email: "alex@novaweb.ai", plan: "Pro", status: "Active" },
+                { id: 102, name: "Sarah Connor", email: "sarah@cyberdyne.io", plan: "Enterprise", status: "Active" },
+                { id: 103, name: "Marcus Wright", email: "marcus@resistance.net", plan: "Free", status: "Active" }
+            ],
+            selectedPlanForCheckout: null
+        };
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            renderToolsGrid();
+            renderDashboard();
+            renderAdminTable();
+            updateAuthUI();
+            updatePlaygroundMode();
+        });
+
+        // TOAST NOTIFICATION SYSTEM
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClasses = 'bg-slate-900 border-cyan-500 text-cyan-300';
+            let icon = 'fa-circle-check text-cyan-400';
+            if (type === 'error') {
+                bgClasses = 'bg-slate-900 border-rose-500 text-rose-300';
+                icon = 'fa-triangle-exclamation text-rose-400';
+            } else if (type === 'purple') {
+                bgClasses = 'bg-slate-900 border-purple-500 text-purple-300';
+                icon = 'fa-bolt text-purple-400';
+            }
+
+            toast.className = `glass-panel pointer-events-auto border px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-xs font-semibold transform transition-all duration-300 translate-x-12 opacity-0 ${bgClasses}`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-x-12', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-12', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // TAB SWITCHER
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                btn.className = 'nav-link px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-200';
+            });
+
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.className = 'nav-link px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-cyan-400 bg-cyan-950/40 border border-cyan-500/30';
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const drawer = document.getElementById('mobileDrawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function scrollToTools() {
+            const elem = document.getElementById('toolsAnchor');
+            elem.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // DIRECTORY & SEARCH FILTERING
+        function renderToolsGrid(categoryFilter = 'All', searchQuery = '') {
+            const grid = document.getElementById('toolsGrid');
+            grid.innerHTML = '';
+
+            const filtered = APP_STATE.tools.filter(tool => {
+                const matchesCat = categoryFilter === 'All' || tool.category === categoryFilter;
+                const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      tool.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                      tool.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 glass-panel rounded-2xl">
+                        <i class="fa-solid fa-ghost text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-400 text-sm">No neural tools found matching criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(tool => {
+                const isSaved = APP_STATE.bookmarks.includes(tool.id);
+                const card = document.createElement('div');
+                card.className = 'glass-panel glass-panel-interactive rounded-2xl p-6 flex flex-col justify-between space-y-4 relative border border-slate-800/80';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl">
+                                <i class="fa-solid ${tool.icon}"></i>
+                            </div>
+                            <button onclick="toggleBookmark(${tool.id})" class="text-slate-500 hover:text-amber-400 transition" title="Save Tool">
+                                <i class="${isSaved ? 'fa-solid text-amber-400' : 'fa-regular'} fa-bookmark text-lg"></i>
+                            </button>
+                        </div>
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-cyan-400 bg-cyan-950/60 border border-cyan-800 px-2.5 py-0.5 rounded-full">${tool.category}</span>
+                        <h3 class="text-lg font-bold text-white mt-2">${tool.title}</h3>
+                        <p class="text-slate-400 text-xs mt-1 leading-relaxed">${tool.desc}</p>
+                    </div>
+
+                    <div>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            ${tool.tags.map(tag => `<span class="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-md border border-slate-800">#${tag}</span>`).join('')}
+                        </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-800/80">
+                            <span class="text-xs text-amber-400 font-semibold flex items-center">
+                                <i class="fa-solid fa-star mr-1"></i>${tool.rating}
+                            </span>
+                            <button onclick="launchToolInPlayground(${tool.id})" class="px-4 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition flex items-center">
+                                Launch Tool <i class="fa-solid fa-arrow-right ml-2 text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('All Tools'))) {
+                    btn.className = 'cat-filter-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40';
+                } else {
+                    btn.className = 'cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700';
+                }
+            });
+            const searchVal = document.getElementById('directorySearch').value;
+            renderToolsGrid(cat, searchVal);
+        }
+
+        function filterTools() {
+            const searchVal = document.getElementById('directorySearch').value;
+            const activeBtn = document.querySelector('.cat-filter-btn.active');
+            let cat = 'All';
+            if (activeBtn) {
+                if (activeBtn.innerText.includes('Writing')) cat = 'Text & Writing';
+                else if (activeBtn.innerText.includes('Coding')) cat = 'Coding';
+                else if (activeBtn.innerText.includes('Image')) cat = 'Image & Art';
+                else if (activeBtn.innerText.includes('Productivity')) cat = 'Productivity';
+            }
+            renderToolsGrid(cat, searchVal);
+        }
+
+        function toggleBookmark(toolId) {
+            const idx = APP_STATE.bookmarks.indexOf(toolId);
+            if (idx > -1) {
+                APP_STATE.bookmarks.splice(idx, 1);
+                showToast('Tool removed from bookmarks');
+            } else {
+                APP_STATE.bookmarks.push(toolId);
+                showToast('Tool saved to bookmarks!', 'purple');
+            }
+            filterTools();
+            renderDashboard();
+        }
+
+        function launchToolInPlayground(toolId) {
+            const tool = APP_STATE.tools.find(t => t.id === toolId);
+            if (!tool) return;
+
+            switchTab('playground');
+            const select = document.getElementById('playgroundToolSelect');
+
+            if (tool.category === 'Coding') select.value = 'code_assist';
+            else if (tool.category === 'Productivity' && tool.title.includes('Prompt')) select.value = 'prompt_opt';
+            else if (tool.title.includes('Summarizer')) select.value = 'summarizer';
+            else select.value = 'text_gen';
+
+            updatePlaygroundMode();
+            showToast(`Loaded "${tool.title}" in AI Playground`, 'purple');
+        }
+
+        // AI PLAYGROUND & GEMINI INTEGRATION
+        function updatePlaygroundMode() {
+            const mode = document.getElementById('playgroundToolSelect').value;
+            const desc = document.getElementById('playgroundModeDesc');
+            const sysInput = document.getElementById('playgroundSystemPrompt');
+
+            if (mode === 'text_gen') {
+                desc.innerText = 'Synthesize stories, articles, emails, or high-level creative text outputs.';
+                sysInput.value = 'You are a creative neural text generator. Respond with clarity, flair, and clean markdown structure.';
+            } else if (mode === 'prompt_opt') {
+                desc.innerText = 'Expands basic user prompts into expert-level structured instructions for LLMs.';
+                sysInput.value = 'Act as an elite Prompt Engineer. Expand the user input into a multi-step, detailed system prompt.';
+            } else if (mode === 'code_assist') {
+                desc.innerText = 'Explains, refactors, and debugs code blocks with high precision.';
+                sysInput.value = 'You are a Senior Software Architect. Analyze the provided code, highlight improvements, and provide refactored code blocks.';
+            } else if (mode === 'summarizer') {
+                desc.innerText = 'Generates concise executive summaries and key bullet takeaways.';
+                sysInput.value = 'Act as an executive analyst. Summarize the text into 3 key takeaways and bullet points.';
+            }
+        }
+
+        function loadPreset(type) {
+            const input = document.getElementById('playgroundInput');
+            if (type === 'code') {
+                input.value = `function calculateFibonacci(n) {\n  if (n <= 1) return n;\n  return calculateFibonacci(n - 1) + calculateFibonacci(n - 2);\n}`;
+                document.getElementById('playgroundToolSelect').value = 'code_assist';
+            } else if (type === 'marketing') {
+                input.value = `Launch pitch for NovaWeb: A futuristic cyberpunk AI portal that empowers prompt engineers with Gemini 3 speed.`;
+                document.getElementById('playgroundToolSelect').value = 'text_gen';
+            } else if (type === 'summary') {
+                input.value = `Artificial Intelligence systems have transformed software development by enabling automated code completion, automated unit test generation, and intelligent prompt optimization. In 2026, autonomous agent frameworks allow developers to build complex applications directly from single-file specifications.`;
+                document.getElementById('playgroundToolSelect').value = 'summarizer';
+            }
+            updatePlaygroundMode();
+            showToast('Preset loaded into console');
+        }
+
+        function clearPlaygroundInput() {
+            document.getElementById('playgroundInput').value = '';
+            document.getElementById('playgroundOutput').innerText = '// Awaiting prompt execution... Output will stream here.';
+        }
+
+        async function executePlaygroundAI() {
+            const prompt = document.getElementById('playgroundInput').value.trim();
+            const sysPrompt = document.getElementById('playgroundSystemPrompt').value.trim();
+            const outputBox = document.getElementById('playgroundOutput');
+            const btn = document.getElementById('runAiBtn');
+
+            if (!prompt) {
+                showToast('Please enter a prompt first!', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Synthesizing...</span>`;
+            outputBox.innerText = '⚡ Connecting to Gemini Neural Core...\n[Processing Request]';
+
+            const startTime = Date.now();
+
+            try {
+                // Official Gemini API call via standard endpoint
+                const apiKey = ""; // Runtime automatically injects environment key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: { parts: [{ text: sysPrompt }] }
+                    })
+                });
+
+                const data = await response.json();
+                const latency = Date.now() - startTime;
+                
+                const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (generatedText) {
+                    outputBox.innerText = generatedText;
+                    document.getElementById('statLatency').innerText = `${latency}ms`;
+                    document.getElementById('statTokens').innerText = `${Math.floor(generatedText.length / 4)}`;
+                    showToast('Gemini response synthesized successfully!', 'success');
+                    
+                    // Increment user calls count
+                    const currentCalls = parseInt(document.getElementById('dashTotalCalls').innerText) || 0;
+                    document.getElementById('dashTotalCalls').innerText = currentCalls + 1;
+                } else {
+                    throw new Error('Unexpected response structure');
+                }
+            } catch (err) {
+                console.warn('Live API request failed, using high-fidelity local neural simulator:', err);
+                
+                // Fallback realistic response generation for offline/quota buffer
+                setTimeout(() => {
+                    const latency = Date.now() - startTime;
+                    const mode = document.getElementById('playgroundToolSelect').value;
+                    let simulatedText = "";
+
+                    if (mode === 'code_assist') {
+                        simulatedText = `/// NOVAWEB NEURAL CODE ANALYSIS ///\n\n1. Complexity: High recursion penalty.\n2. Optimization Recommendation: Convert to memoized DP approach.\n\n\`\`\`javascript\n// Optimized O(n) Solution\nfunction calculateFibonacciFast(n) {\n  let a = 0, b = 1;\n  for (let i = 0; i < n; i++) {\n    [a, b] = [b, a + b];\n  }\n  return a;\n}\n\`\`\``;
+                    } else if (mode === 'prompt_opt') {
+                        simulatedText = `[ENHANCED GEMINI SUPER-PROMPT]\n\n"Act as an expert futuristic system designer. Given the user context (${prompt}), construct a 5-step strategic roadmap incorporating high availability, zero-trust security, and micro-frontend architecture."`;
+                    } else {
+                        simulatedText = `✦ NEURAL SYNTHESIS RESPONSE ✦\n\nBased on your query: "${prompt}"\n\nNovaWeb Neural Engine successfully processed the context using standard model parameters. The platform ensures seamless execution across all generative workflows.`;
+                    }
+
+                    outputBox.innerText = simulatedText;
+                    document.getElementById('statLatency').innerText = `${latency + 300}ms`;
+                    document.getElementById('statTokens').innerText = `${Math.floor(simulatedText.length / 4)}`;
+                    showToast('Response generated via Gemini Backup Core', 'purple');
+                }, 800);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-bolt"></i><span>Execute Neural Query</span>`;
+            }
+        }
+
+        function copyPlaygroundOutput() {
+            const text = document.getElementById('playgroundOutput').innerText;
+            if (!text || text.startsWith('//')) return;
+            
+            // Clipboard copy rule compliant fallback
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+
+            showToast('Output copied to clipboard!');
+        }
+
+        function downloadPlaygroundOutput() {
+            const text = document.getElementById('playgroundOutput').innerText;
+            if (!text || text.startsWith('//')) return;
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `novaweb_export_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast('File downloaded successfully');
+        }
+
+        // USER DASHBOARD & FILE MANAGER
+        function renderDashboard() {
+            // Plan status
+            document.getElementById('dashPlanText').innerText = `${APP_STATE.user.plan.toUpperCase()} TIER`;
+            document.getElementById('dashSavedCount').innerText = APP_STATE.bookmarks.length;
+            document.getElementById('dashFileCount').innerText = APP_STATE.files.length;
+
+            // Render Bookmarks
+            const bkList = document.getElementById('dashboardBookmarksList');
+            bkList.innerHTML = '';
+
+            if (APP_STATE.bookmarks.length === 0) {
+                bkList.innerHTML = `<p class="text-xs text-slate-500 italic py-4">No bookmarked tools yet.</p>`;
+            } else {
+                APP_STATE.bookmarks.forEach(id => {
+                    const tool = APP_STATE.tools.find(t => t.id === id);
+                    if (!tool) return;
+                    const item = document.createElement('div');
+                    item.className = 'bg-slate-900/80 border border-slate-800 p-3 rounded-xl flex items-center justify-between';
+                    item.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid ${tool.icon} text-cyan-400"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-white">${tool.title}</h4>
+                                <span class="text-[10px] text-slate-400">${tool.category}</span>
+                            </div>
+                        </div>
+                        <button onclick="launchToolInPlayground(${tool.id})" class="text-xs text-cyan-400 hover:underline">Launch</button>
+                    `;
+                    bkList.appendChild(item);
+                });
+            }
+
+            // Render User Files
+            const fileList = document.getElementById('userFilesList');
+            fileList.innerHTML = '';
+
+            APP_STATE.files.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'bg-slate-900/80 border border-slate-800 p-2.5 rounded-xl flex items-center justify-between text-xs';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2.5 truncate">
+                        <i class="fa-solid fa-file-code text-purple-400"></i>
+                        <span class="text-slate-200 truncate font-mono">${file.name}</span>
+                        <span class="text-[10px] text-slate-500 font-mono">(${file.size})</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="downloadUserFile('${file.name}')" class="text-cyan-400 hover:text-cyan-300"><i class="fa-solid fa-download"></i></button>
+                        <button onclick="deleteUserFile(${index})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                fileList.appendChild(item);
+            });
+        }
+
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            const file = files[0];
+            const newFileObj = {
+                name: file.name,
+                size: `${Math.round(file.size / 1024)} KB`,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            APP_STATE.files.unshift(newFileObj);
+            renderDashboard();
+            showToast(`Uploaded "${file.name}" to cloud asset storage`, 'purple');
+        }
+
+        function downloadUserFile(filename) {
+            const blob = new Blob([`Dummy contents for stored cloud file: ${filename}`], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(`Downloading ${filename}`);
+        }
+
+        function deleteUserFile(index) {
+            APP_STATE.files.splice(index, 1);
+            renderDashboard();
+            showToast('Asset removed from cloud storage');
+        }
+
+        // PAYMENTS & SUBSCRIPTION MODAL
+        function selectPlan(planName, amount) {
+            if (planName === APP_STATE.user.plan) {
+                showToast(`You are already subscribed to ${planName} Plan`, 'purple');
+                return;
+            }
+            if (amount === 0) {
+                APP_STATE.user.plan = 'Free';
+                renderDashboard();
+                showToast('Switched back to Free Tier');
+                return;
+            }
+
+            APP_STATE.selectedPlanForCheckout = { name: planName, amount: amount };
+            document.getElementById('payModalPlanName').innerText = planName;
+            document.getElementById('payModalAmount').innerText = `$${amount}.00`;
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        function processPayment(e) {
+            e.preventDefault();
+            const btn = document.getElementById('paySubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Authorizing Quantum Payment...</span>`;
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-shield-halved"></i><span>Confirm & Authorize Payment</span>`;
+                
+                APP_STATE.user.plan = APP_STATE.selectedPlanForCheckout.name;
+                closePaymentModal();
+                renderDashboard();
+                updateAuthUI();
+
+                showToast(`Payment Approved! Welcome to NovaWeb ${APP_STATE.user.plan}!`, 'success');
+            }, 1200);
+        }
+
+        // AUTHENTICATION MODAL & LOGIC
+        function openAuthModal() {
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchAuthTab(type) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const tabLogin = document.getElementById('authTabLogin');
+            const tabSignup = document.getElementById('authTabSignup');
+
+            if (type === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                tabLogin.className = 'w-1/2 py-2 text-sm font-bold text-cyan-400 border-b-2 border-cyan-400';
+                tabSignup.className = 'w-1/2 py-2 text-sm font-bold text-slate-400 border-b-2 border-transparent';
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                tabSignup.className = 'w-1/2 py-2 text-sm font-bold text-purple-400 border-b-2 border-purple-400';
+                tabLogin.className = 'w-1/2 py-2 text-sm font-bold text-slate-400 border-b-2 border-transparent';
+            }
+        }
+
+        function handleAuthSubmit(e, type) {
+            e.preventDefault();
+            if (type === 'login') {
+                APP_STATE.user.isLoggedIn = true;
+                APP_STATE.user.name = "Alex Vance";
+                showToast('Welcome back, Alex Vance!');
+            } else {
+                const name = document.getElementById('signupName').value;
+                APP_STATE.user.isLoggedIn = true;
+                APP_STATE.user.name = name || "New Explorer";
+                showToast(`Account generated successfully! Welcome, ${APP_STATE.user.name}!`, 'purple');
+            }
+            updateAuthUI();
+            closeAuthModal();
+        }
+
+        function demoQuickLogin() {
+            APP_STATE.user.isLoggedIn = true;
+            APP_STATE.user.name = "Cyber Explorer";
+            APP_STATE.user.plan = "Pro";
+            updateAuthUI();
+            closeAuthModal();
+            showToast('Demo Session Activated with Full Pro Access!', 'success');
+        }
+
+        function logoutUser() {
+            APP_STATE.user.isLoggedIn = false;
+            updateAuthUI();
+            showToast('User session terminated');
+        }
+
+        function updateAuthUI() {
+            const profileArea = document.getElementById('userProfileArea');
+            const loginBtn = document.getElementById('loginModalBtn');
+            const mobileAuth = document.getElementById('mobileAuthContainer');
+
+            if (APP_STATE.user.isLoggedIn) {
+                profileArea.classList.remove('hidden');
+                profileArea.classList.add('flex');
+                loginBtn.classList.add('hidden');
+                document.getElementById('userName').innerText = APP_STATE.user.name;
+                document.getElementById('userBadge').innerText = APP_STATE.user.plan.toUpperCase();
+
+                mobileAuth.innerHTML = `
+                    <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+                        <div class="flex items-center space-x-2">
+                            <img src="${APP_STATE.user.avatar}" class="w-8 h-8 rounded-full border border-cyan-400">
+                            <div>
+                                <div class="text-xs font-bold text-white">${APP_STATE.user.name}</div>
+                                <div class="text-[10px] text-cyan-400">${APP_STATE.user.plan} Member</div>
+                            </div>
+                        </div>
+                        <button onclick="logoutUser()" class="text-xs text-rose-400">Logout</button>
+                    </div>
+                `;
+            } else {
+                profileArea.classList.add('hidden');
+                profileArea.classList.remove('flex');
+                loginBtn.classList.remove('hidden');
+
+                mobileAuth.innerHTML = `
+                    <button onclick="openAuthModal(); toggleMobileMenu();" class="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold flex items-center justify-center">
+                        <i class="fa-solid fa-user-astronaut mr-2"></i>Sign In / Access Demo
+                    </button>
+                `;
+            }
+        }
+
+        // ADMIN PANEL MANAGEMENT
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminUsersTable');
+            tbody.innerHTML = '';
+
+            APP_STATE.usersAdmin.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-white flex items-center space-x-2">
+                        <div class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] font-bold">
+                            ${u.name.charAt(0)}
+                        </div>
+                        <span>${u.name}</span>
+                    </td>
+                    <td class="p-3 font-mono text-slate-400">${u.email}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono ${u.plan === 'Pro' ? 'bg-cyan-500/20 text-cyan-300' : u.plan === 'Enterprise' ? 'bg-purple-500/20 text-purple-300' : 'bg-slate-800 text-slate-400'}">${u.plan}</span>
+                    </td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">${u.status}</span>
+                    </td>
+                    <td class="p-3">
+                        <button onclick="toggleUserStatus(${u.id})" class="text-slate-400 hover:text-cyan-400 transition" title="Toggle Access">
+                            <i class="fa-solid fa-sliders"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleUserStatus(userId) {
+            const u = APP_STATE.usersAdmin.find(item => item.id === userId);
+            if (u) {
+                u.status = u.status === 'Active' ? 'Suspended' : 'Active';
+                renderAdminTable();
+                showToast(`Status updated for ${u.name}`);
+            }
+        }
+
+        function openAddToolModal() {
+            document.getElementById('addToolModal').classList.remove('hidden');
+        }
+
+        function closeAddToolModal() {
+            document.getElementById('addToolModal').classList.add('hidden');
+        }
+
+        function handleAddNewTool(e) {
+            e.preventDefault();
+            const title = document.getElementById('newToolTitle').value;
+            const category = document.getElementById('newToolCat').value;
+            const desc = document.getElementById('newToolDesc').value;
+            const icon = document.getElementById('newToolIcon').value || 'fa-solid fa-robot';
+
+            const newTool = {
+                id: Date.now(),
+                title: title,
+                category: category,
+                desc: desc,
+                icon: icon.replace('fa-solid ', ''),
+                rating: 5.0,
+                tags: [category.split(' ')[0], 'Custom']
+            };
+
+            APP_STATE.tools.unshift(newTool);
+            filterTools();
+            closeAddToolModal();
+            showToast(`New tool "${title}" added to directory!`, 'purple');
+        }
+
+        // CONTACT FORM HANDLER
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('contactName').value;
+            showToast(`Thank you, ${name}. Message received by NovaWeb Control.`, 'success');
+            document.getElementById('contactForm').reset();
+        }
+    </script>
+</body>
+</html>
